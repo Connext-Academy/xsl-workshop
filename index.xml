@@ -41,6 +41,13 @@
         </column>
     </row>
     <row>
+        <title>XML document: DOMNode en familie</title>
+        <text>
+            De verschillende onderdelen van een XML document
+            <img src='/images/DOMDocument.jpg' width='100%'/>
+        </text>
+    </row>
+    <row>
         <title>&lt;xsl:template&gt; mode &amp; name properties</title>
         <text>
             De 'mode' property kan je gebruiken om voor dezelfde match een andere 'view' te maken:
