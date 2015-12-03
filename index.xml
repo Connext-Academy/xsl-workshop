@@ -30,7 +30,7 @@
             </item>
             <item>
                 <title>Deze pagina is XML</title>
-                <text>Echt waar! Kijk maar in de <a href='view-source:http://xsl.connext.niels.choffice.nl' target='_blank'>source</a>.<br/><br/>Dit is de <a href='/workshop.xsl.xml'>XSL</a> waarmee de browser de XML transformeert.</text>
+                <text>Echt waar! Kijk maar in de <a href='view-source:http://xsl.connext.niels.choffice.nl' target='_blank'>source</a>.<br/><br/>Dit is de <a href='https://github.com/Connext-Academy/xsl-workshop/blob/master/workshop.xsl'>XSL</a> waarmee de browser de XML transformeert.</text>
             </item>
         </column>
         <column>
