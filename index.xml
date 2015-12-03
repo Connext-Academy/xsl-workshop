@@ -173,6 +173,26 @@ Add a table row cell.
         </text>
     </row>
     <row>
+        <title>XSL transform in PHP</title>
+        <text>
+            <pre><code class='php'>
+&lt;?php
+
+$xmlDocument = new DOMDocument();
+$xmlDocument-&gt;load('index.xml');
+
+$xslDocument = new DOMDocument();
+$xslDocument-&gt;load('workshop.xsl');
+
+$xslProcessor = new XSLTProcessor();
+$xslProcessor-&gt;registerPHPFunctions(); // Mogelijkheid PHP functies in XSL activeren.
+$xslProcessor-&gt;importStyleSheet($xslDocument);
+
+echo $xslProcessor-&gt;transformToXML($xmlDocument);
+            </code></pre>
+        </text>
+    </row>
+    <row>
         <title>XSL debuggen (in Windmill)</title>
         <text>XSL 'debuggen' blijft lastig om te doen.<br/><br/>Hierbij wel een aantal tips om het makkelijker te maken:
             <ol>
