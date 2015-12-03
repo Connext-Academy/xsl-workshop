@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type='text/xsl' href='/workshop.xsl'?>
+<page>
+    <organization>Connext Academy</organization>
+    <title>XSL workshop</title>
+    <jumbotron background='/images/yoda.jpg'>
+        <title>XSL workshop</title>
+        <subtitle>Hoe een XSL master, jij wordt.</subtitle>
+    </jumbotron>
+    <row>
+        <title>Weetjes...</title>
+        <column>
+            <item>
+                <title>XML / XPath</title>
+                <text>XSL is XML. In XSL maak je selecties door middel van zogenaamde XPath queries.</text>
+            </item>
+            <item>
+                <title>XPath Axes</title>
+                <text>Door de context van een &lt;xsl:template&gt; kun je gebruik maken van XPath Axes, zoals bijvoorbeeld: parent::node().<br/><br/>Voor meer informatie zie: <a href='http://www.w3schools.com/xsl/xpath_axes.asp' target='_blank'>W3 schools</a></text>
+            </item>
+        </column>
+        <column>
+            <item>
+                <title>Context</title>
+                <text>Elke &lt;xsl:template&gt; heeft een context. Deze is relatief aan bijv. de node die je matched.</text>
+            </item>
+            <item>
+                <title>Meer dan alleen XML naar HTML</title>
+                <text>XSL kan meer dan alleen XML naar HTML transformeren. Het kan ook gebruikt worden om XML naar PHP, SVG of een PDF om te zetten.</text>
+            </item>
+            <item>
+                <title>Deze pagina is XML</title>
+                <text>Echt waar! Kijk maar in de <a href='view-source:http://xsl.connext.niels.choffice.nl' target='_blank'>source</a>.<br/><br/>Dit is de <a href='/workshop.xsl.xml'>XSL</a> waarmee de browser de XML transformeert.</text>
+            </item>
+        </column>
+        <column>
+            <item>
+                <title>Wordt niet getoond?</title>
+                <text>Nee, want in de workshop.xsl is het gelimiteerd op 2 kolommen. :-D</text>
+            </item>
+        </column>
+    </row>
+    <row>
+        <title>&lt;xsl:template&gt; mode &amp; name properties</title>
+        <text>
+            De 'mode' property kan je gebruiken om voor dezelfde match een andere 'view' te maken:
+            <pre><code class='xsl'>
+&lt;!--
+Add the jumbotron.
+--&gt;
+&lt;xsl:template match='jumbotron'&gt;
+    &lt;div class='jumbotron'&gt;
+        &lt;xsl:apply-templates select='self::node()' mode='background'/&gt;
+        &lt;h1&gt;
+            &lt;xsl:value-of select='title'/&gt;
+        &lt;/h1&gt;
+        &lt;p class='lead'&gt;
+            &lt;xsl:value-of select='subtitle'/&gt;
+        &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add the jumbotron background when available.
+--&gt;
+&lt;xsl:template match='jumbotron' mode='background'/&gt;
+&lt;xsl:template match='jumbotron[@background]' mode='background'&gt;
+    &lt;xsl:attribute name='style'&gt;
+        background-image: url(&lt;xsl:value-of select='@background'/&gt;);
+    &lt;/xsl:attribute&gt;
+&lt;/xsl:template&gt;
+            </code></pre><br/>
+            De 'name' property is niet met &lt;xsl:apply-templates&gt; te gebruiken, maar met &lt;xsl:call-template&gt;.<br/><br/>Dit kan handig zijn als je geen &lt;xsl:apply-imports/&gt; kan doen, maar een parent &lt;xsl:template&gt; wil overslaan.<br/>
+            Dit is in PHP te vergelijken met Foo extends Bar extends Baz, waarbij je dezelfde method in Bar overslaat.
+            <br/><br/>
+            <b>Let op:</b> Een 'name' property uniek over alle XSL bestanden die worden ingeladen<br/>
+            (ook via &lt;xsl:import/&gt; en &lt;xsl:include/&gt;).
+        </text>
+    </row>
+    <row>
+        <title>XSL functies: position() en mod(ulo)</title>
+        <text>
+            <ul>
+                <li>position() geeft de positie van een node ten opzichte van de 'parent' node<br/>(zoals een gewone PHP array ook 'key' nummers heeft).</li>
+                <li>Door middel van modulo kun je even en oneven bepalen, waarmee je bijvoorbeeld regels in een tabel een kleur kunt geven.</li>
+            </ul>
+        </text>
+        <table>
+            <row firstName='Niels' lastName='Nijens'/>
+            <row firstName='Giso' lastName='Stallenberg'/>
+            <row firstName='Evelien' lastName='Toutenhoofd'/>
+        </table>
+        <text>
+            <pre><code class='xsl'>
+&lt;!--
+Add a table.
+--&gt;
+&lt;xsl:template match='table'&gt;
+    &lt;div class='panel panel-default'&gt;
+        &lt;table class='table'&gt;
+            &lt;thead&gt;
+                &lt;xsl:apply-templates select='row' mode='tableHeader'/&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+                &lt;xsl:apply-templates select='row'/&gt;
+            &lt;/tbody&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add a table header.
+--&gt;
+&lt;xsl:template match='table/row[1]' mode='tableHeader'&gt;
+    &lt;tr&gt;
+        &lt;th&gt;#&lt;/th&gt;
+        &lt;xsl:apply-templates select='@*' mode='tableHeader'/&gt;
+    &lt;/tr&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add a table header column.
+--&gt;
+&lt;xsl:template match='table/row/@*' mode='tableHeader'&gt;
+    &lt;th&gt;&lt;xsl:value-of select='local-name()'/&gt;&lt;/th&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add a table row.
+--&gt;
+&lt;xsl:template match='table/row'&gt;
+    &lt;tr&gt;
+        &lt;xsl:apply-templates select='self::node()' mode='classAttribute'/&gt;
+        &lt;th scope='row'&gt;&lt;xsl:value-of select='position()'/&gt;&lt;/th&gt;
+        &lt;xsl:apply-templates select='@*'/&gt;
+    &lt;/tr&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add a table row class attribute.
+--&gt;
+&lt;xsl:template match='table/row' mode='classAttribute'&gt;
+    &lt;xsl:attribute name='class'&gt;
+        &lt;xsl:apply-templates select='self::node()' mode='classAttributeValue'/&gt;
+    &lt;/xsl:attribute&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add a table row class attribute value.
+--&gt;
+&lt;xsl:template match='table/row' mode='classAttributeValue'&gt;
+    &lt;xsl:text&gt;odd&lt;/xsl:text&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add a table row class attribute value.
+--&gt;
+&lt;xsl:template match='table/row[position() mod 2 = 0]' mode='classAttributeValue'&gt;
+    &lt;xsl:text&gt;even&lt;/xsl:text&gt;
+&lt;/xsl:template&gt;
+
+&lt;!--
+Add a table row cell.
+--&gt;
+&lt;xsl:template match='table/row/@*'&gt;
+    &lt;td&gt;&lt;xsl:value-of select='.'/&gt;&lt;/td&gt;
+&lt;/xsl:template&gt;
+            </code></pre>
+
+            Er zijn ook nog tal van andere handige XSL functies, waarvoor je dus geen PHP functie hoeft te gebruiken!<br/>
+            <br/>
+            Zie: <a href='http://www.w3schools.com/xsl/xsl_functions.asp' target='_blank'>W3 schools</a>
+        </text>
+    </row>
+    <row>
+        <title>XSL debuggen (in Windmill)</title>
+        <text>XSL 'debuggen' blijft lastig om te doen.<br/><br/>Hierbij wel een aantal tips om het makkelijker te maken:
+            <ol>
+                <li>Gebruik bovenstaande weetjes.</li>
+                <li>?wmtrigger[]=xml voor het tonen van de XML.</li>
+                <li>?wmtrigger[]=xsl voor het tonen van de XSL (design template). Hierin kun je niet alle &lt;xsl:template&gt;'s zien, maar wel alle XSL bestanden die geimporteerd worden.</li>
+                <li>Gebruik &lt;xsl:value-of select='local-name()'/&gt; als je wilt weten welke node gematched wordt.</li>
+                <li>Gebruik &lt;xsl:value-of select='name(parent::node())'/&gt; als je wilt weten welke parent node boven de node zit.</li>
+                <li>Gebruik &lt;xsl:value-of select='name(parent::node())'/&gt; als je wilt weten welke parent node boven de node zit.</li>
+                <li>Gebruik &lt;xsl:value-of select='count(ancestor::node())'/&gt; als je wilt weten hoeveel nodes diep je in het XML document zit.</li>
+            </ol>
+        </text>
+    </row>
+    <row>
+        <title>XSL: The right way</title>
+        <column>
+            <item>
+                <title>&lt;xsl:template&gt; all the things!</title>
+                <text>Maak zoveel mogelijk gebruik van &lt;xsl:template&gt; (en dus ook &lt;xsl:apply-templates&gt;).<br/>Hierdoor heb je nooit &lt;xsl:if&gt;, &lt;xsl:for-each&gt; en &lt;xsl:choose&gt; nodig.</text>
+            </item>
+        </column>
+        <column>
+            <item>
+                <title>Maak zoveel mogelijk gebruik van 'native' XSL functies</title>
+                <text>De meeste functies die je met PHP uitvoert kunnen ook gedaan worden met standaard XSL functies.<br/>Bijvoorbeeld: substring() of starts-with()<br/><br/>Zie <a href='http://www.w3schools.com/xsl/xsl_functions.asp' target='_blank'>W3 schools</a> voor meer informatie.</text>
+            </item>
+        </column>
+    </row>
+</page>
